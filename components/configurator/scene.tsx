@@ -230,17 +230,17 @@ export function Scene3D() {
       {/* Premium Studio Lighting */}
       <Lighting />
 
-      {/* City/Apartment Environment for realistic steel reflections */}
-      <Environment preset="apartment" environmentIntensity={0.6} />
+      {/* Studio Environment for photorealistic steel reflections */}
+      <Environment preset="studio" environmentIntensity={1.0} />
 
       {/* High-Resolution Contact Shadows for grounding */}
       <ContactShadows
         position={[0, 0.01, 0]}
-        opacity={0.4}
-        scale={12}
-        blur={2.5}
+        opacity={0.6}
+        scale={15}
+        blur={2}
         far={2}
-        resolution={1024}
+        resolution={2048}
       />
 
       {/* The Door - Enhanced with textures and dimensions */}
