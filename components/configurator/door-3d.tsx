@@ -2,7 +2,33 @@
 
 import { useRef } from "react";
 import { useConfiguratorStore } from "@/lib/store";
+import { RoundedBox } from "@react-three/drei";
 import * as THREE from "three";
+
+// Steel material configuration
+const SteelMaterial = ({ color }: { color: string }) => (
+  <meshStandardMaterial
+    color={color}
+    roughness={0.25}
+    metalness={0.8}
+    envMapIntensity={1}
+  />
+);
+
+// Glass material configuration
+const GlassMaterial = () => (
+  <meshPhysicalMaterial
+    color="#eff6ff"
+    transparent
+    transmission={1}
+    roughness={0.05}
+    thickness={2.5}
+    ior={1.5}
+    envMapIntensity={1}
+    clearcoat={1}
+    clearcoatRoughness={0}
+  />
+);
 
 export function Door3D() {
   const { doorType, gridType, finish, handle, doorLeafWidth, height } =
@@ -19,11 +45,16 @@ export function Door3D() {
   // Convert mm to meters for 3D scene
   const doorWidth = doorLeafWidth / 1000; // Convert mm to m
   const doorHeight = height / 1000; // Convert mm to m
-  const frameThickness = 0.03; // Slim steel profile (3cm)
-  const frameDepth = 0.05; // Depth of frame
-  const glassThickness = 0.015; // Realistic glass thickness
 
-  // Calculate grid divider positions
+  // Profile dimensions (in meters)
+  const stileWidth = 0.04; // 40mm vertical profiles
+  const stileDepth = 0.04; // 40mm depth
+  const railHeight = 0.02; // 20mm horizontal profiles
+  const railDepth = 0.04; // 40mm depth
+  const glassThickness = 0.008; // 8mm glass
+  const profileRadius = 0.001; // 1mm rounded corners
+
+  // Calculate positions for grid dividers
   const getDividerPositions = () => {
     if (gridType === "3-vlak") {
       return [-doorHeight / 3, doorHeight / 3];
@@ -37,82 +68,124 @@ export function Door3D() {
 
   return (
     <group ref={doorRef} position={[0, doorHeight / 2, 0]}>
-      {/* Outer Frame - Top */}
-      <mesh position={[0, doorHeight / 2, 0]} castShadow>
-        <boxGeometry args={[doorWidth + frameThickness * 2, frameThickness, frameDepth]} />
-        <meshStandardMaterial color={frameColor} metalness={0.9} roughness={0.2} />
-      </mesh>
+      {/* LEFT STILE - Vertical profile */}
+      <RoundedBox
+        args={[stileWidth, doorHeight, stileDepth]}
+        radius={profileRadius}
+        smoothness={4}
+        position={[-doorWidth / 2 + stileWidth / 2, 0, 0]}
+        castShadow
+      >
+        <SteelMaterial color={frameColor} />
+      </RoundedBox>
 
-      {/* Outer Frame - Bottom */}
-      <mesh position={[0, -doorHeight / 2, 0]} castShadow>
-        <boxGeometry args={[doorWidth + frameThickness * 2, frameThickness, frameDepth]} />
-        <meshStandardMaterial color={frameColor} metalness={0.9} roughness={0.2} />
-      </mesh>
+      {/* RIGHT STILE - Vertical profile */}
+      <RoundedBox
+        args={[stileWidth, doorHeight, stileDepth]}
+        radius={profileRadius}
+        smoothness={4}
+        position={[doorWidth / 2 - stileWidth / 2, 0, 0]}
+        castShadow
+      >
+        <SteelMaterial color={frameColor} />
+      </RoundedBox>
 
-      {/* Outer Frame - Left */}
-      <mesh position={[-doorWidth / 2 - frameThickness / 2, 0, 0]} castShadow>
-        <boxGeometry args={[frameThickness, doorHeight + frameThickness * 2, frameDepth]} />
-        <meshStandardMaterial color={frameColor} metalness={0.9} roughness={0.2} />
-      </mesh>
+      {/* TOP RAIL - Horizontal profile */}
+      <RoundedBox
+        args={[doorWidth - stileWidth * 2, railHeight, railDepth]}
+        radius={profileRadius}
+        smoothness={4}
+        position={[0, doorHeight / 2 - railHeight / 2, 0]}
+        castShadow
+      >
+        <SteelMaterial color={frameColor} />
+      </RoundedBox>
 
-      {/* Outer Frame - Right */}
-      <mesh position={[doorWidth / 2 + frameThickness / 2, 0, 0]} castShadow>
-        <boxGeometry args={[frameThickness, doorHeight + frameThickness * 2, frameDepth]} />
-        <meshStandardMaterial color={frameColor} metalness={0.9} roughness={0.2} />
-      </mesh>
+      {/* BOTTOM RAIL - Horizontal profile */}
+      <RoundedBox
+        args={[doorWidth - stileWidth * 2, railHeight, railDepth]}
+        radius={profileRadius}
+        smoothness={4}
+        position={[0, -doorHeight / 2 + railHeight / 2, 0]}
+        castShadow
+      >
+        <SteelMaterial color={frameColor} />
+      </RoundedBox>
 
-      {/* Glass Panel - Premium Physical Material */}
-      <mesh position={[0, 0, 0]} castShadow receiveShadow>
-        <boxGeometry args={[doorWidth, doorHeight, glassThickness]} />
-        <meshPhysicalMaterial
-          color="#eef6fc"
-          transparent
-          transmission={1}
-          roughness={0}
-          thickness={2}
-          envMapIntensity={1}
-          clearcoat={1}
-          clearcoatRoughness={0}
-        />
-      </mesh>
-
-      {/* Horizontal Dividers (Grid) - Slim profiles */}
+      {/* INTERMEDIATE RAILS (Grid dividers) */}
       {dividerPositions.map((yPos, index) => (
-        <mesh key={`divider-${index}`} position={[0, yPos, 0.01]} castShadow>
-          <boxGeometry args={[doorWidth, frameThickness, frameDepth]} />
-          <meshStandardMaterial color={frameColor} metalness={0.9} roughness={0.2} />
-        </mesh>
+        <RoundedBox
+          key={`rail-${index}`}
+          args={[doorWidth - stileWidth * 2, railHeight, railDepth]}
+          radius={profileRadius}
+          smoothness={4}
+          position={[0, yPos, 0]}
+          castShadow
+        >
+          <SteelMaterial color={frameColor} />
+        </RoundedBox>
       ))}
 
-      {/* Vertical Divider for Paneel */}
+      {/* VERTICAL DIVIDER for Paneel */}
       {doorType === "paneel" && (
-        <mesh position={[0, 0, 0.01]} castShadow>
-          <boxGeometry args={[frameThickness, doorHeight, frameDepth]} />
-          <meshStandardMaterial color={frameColor} metalness={0.9} roughness={0.2} />
-        </mesh>
+        <RoundedBox
+          args={[stileWidth, doorHeight - railHeight * 2, stileDepth]}
+          radius={profileRadius}
+          smoothness={4}
+          position={[0, 0, 0]}
+          castShadow
+        >
+          <SteelMaterial color={frameColor} />
+        </RoundedBox>
       )}
 
-      {/* Handle - U-Greep for Taats */}
+      {/* GLASS PANEL - Sits inside the frame */}
+      <mesh
+        position={[0, 0, 0]}
+        castShadow
+        receiveShadow
+      >
+        <boxGeometry
+          args={[
+            doorWidth - stileWidth * 2,
+            doorHeight - railHeight * 2,
+            glassThickness,
+          ]}
+        />
+        <GlassMaterial />
+      </mesh>
+
+      {/* HANDLE - U-Greep for Taats */}
       {doorType === "taats" && handle === "u-greep" && (
-        <mesh position={[0, 0, frameDepth + 0.01]} castShadow>
-          <boxGeometry args={[0.025, 0.6, 0.025]} />
-          <meshStandardMaterial color={frameColor} metalness={0.9} roughness={0.15} />
-        </mesh>
+        <RoundedBox
+          args={[0.02, 0.6, 0.02]}
+          radius={0.003}
+          smoothness={4}
+          position={[0, 0, railDepth / 2 + 0.01]}
+          castShadow
+        >
+          <SteelMaterial color={frameColor} />
+        </RoundedBox>
       )}
 
-      {/* Handle - Klink for Scharnier */}
+      {/* HANDLE - Klink for Scharnier */}
       {doorType === "scharnier" && handle === "klink" && (
-        <group position={[doorWidth / 2 - 0.12, 0, frameDepth + 0.01]}>
-          <mesh castShadow>
-            <boxGeometry args={[0.1, 0.025, 0.025]} />
-            <meshStandardMaterial color={frameColor} metalness={0.9} roughness={0.15} />
-          </mesh>
-          <mesh position={[0.05, 0, 0]} castShadow>
-            <sphereGeometry args={[0.02, 32, 32]} />
+        <group position={[doorWidth / 2 - stileWidth - 0.1, 0, railDepth / 2 + 0.01]}>
+          <RoundedBox
+            args={[0.08, 0.02, 0.02]}
+            radius={0.003}
+            smoothness={4}
+            castShadow
+          >
+            <SteelMaterial color={frameColor} />
+          </RoundedBox>
+          <mesh position={[0.04, 0, 0]} castShadow>
+            <sphereGeometry args={[0.015, 32, 32]} />
             <meshStandardMaterial
               color={finish === "brons" ? "#6B5434" : frameColor}
               metalness={0.95}
               roughness={0.05}
+              envMapIntensity={1.2}
             />
           </mesh>
         </group>
