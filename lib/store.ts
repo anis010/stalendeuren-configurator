@@ -48,6 +48,19 @@ interface ConfiguratorState {
   setDimensions: (width: number, height: number) => void;
 }
 
+// Helper function for recalculation
+const recalculate = (get: () => ConfiguratorState, set: (state: Partial<ConfiguratorState>) => void) => {
+  const { width, doorConfig, sidePanel } = get();
+
+  set({
+    holeWidth: calculateHoleWidth(width, doorConfig, sidePanel),
+    doorLeafWidth: calculateDoorLeafWidth(width, doorConfig, sidePanel),
+    sidePanelWidth: calculateSidePanelWidth(width, doorConfig, sidePanel),
+    minWidth: calculateHoleMinWidth(doorConfig, sidePanel),
+    maxWidth: calculateHoleMaxWidth(doorConfig, sidePanel),
+  });
+};
+
 export const useConfiguratorStore = create<ConfiguratorState>((set, get) => ({
   // Initial state
   doorType: 'taats',
@@ -69,17 +82,17 @@ export const useConfiguratorStore = create<ConfiguratorState>((set, get) => ({
   // Actions with automatic recalculation
   setDoorType: (doorType) => {
     set({ doorType });
-    get().recalculate();
+    recalculate(get, set);
   },
 
   setDoorConfig: (doorConfig) => {
     set({ doorConfig });
-    get().recalculate();
+    recalculate(get, set);
   },
 
   setSidePanel: (sidePanel) => {
     set({ sidePanel });
-    get().recalculate();
+    recalculate(get, set);
   },
 
   setGridType: (gridType) => set({ gridType }),
@@ -96,7 +109,7 @@ export const useConfiguratorStore = create<ConfiguratorState>((set, get) => ({
     // Clamp width to valid range
     const clampedWidth = Math.max(minWidth, Math.min(maxWidth, width));
     set({ width: clampedWidth });
-    get().recalculate();
+    recalculate(get, set);
   },
 
   setHeight: (height) => {
@@ -109,17 +122,4 @@ export const useConfiguratorStore = create<ConfiguratorState>((set, get) => ({
     get().setWidth(width);
     get().setHeight(height);
   },
-
-  // Internal recalculation helper
-  recalculate: () => {
-    const { width, doorConfig, sidePanel } = get();
-
-    set({
-      holeWidth: calculateHoleWidth(width, doorConfig, sidePanel),
-      doorLeafWidth: calculateDoorLeafWidth(width, doorConfig, sidePanel),
-      sidePanelWidth: calculateSidePanelWidth(width, doorConfig, sidePanel),
-      minWidth: calculateHoleMinWidth(doorConfig, sidePanel),
-      maxWidth: calculateHoleMaxWidth(doorConfig, sidePanel),
-    });
-  },
-} as ConfiguratorState));
+}));
