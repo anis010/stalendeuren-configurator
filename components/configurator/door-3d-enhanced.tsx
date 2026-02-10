@@ -2,40 +2,18 @@
 
 import { useRef } from "react";
 import { useConfiguratorStore } from "@/lib/store";
-import { RoundedBox, Text, useTexture } from "@react-three/drei";
-import { getMetalTexture } from "@/lib/asset-map";
+import { RoundedBox } from "@react-three/drei";
 import * as THREE from "three";
 
-// Steel material with photorealistic texture mapping
-const SteelMaterial = ({ color, finish }: { color: string; finish: string }) => {
-  try {
-    const metalTexture = useTexture(getMetalTexture(finish));
-
-    // Configure texture repeat for realistic grain (4x horizontal, 8x vertical)
-    metalTexture.wrapS = metalTexture.wrapT = THREE.RepeatWrapping;
-    metalTexture.repeat.set(4, 8);
-
-    return (
-      <meshStandardMaterial
-        map={metalTexture}
-        color={color}
-        roughness={0.7} // Matte powdercoat finish
-        metalness={0.8}
-        envMapIntensity={1.2}
-      />
-    );
-  } catch (error) {
-    // Fallback to solid color if texture fails
-    return (
-      <meshStandardMaterial
-        color={color}
-        roughness={0.7}
-        metalness={0.8}
-        envMapIntensity={1}
-      />
-    );
-  }
-};
+// Steel material - fallback to solid color for now
+const SteelMaterial = ({ color }: { color: string }) => (
+  <meshStandardMaterial
+    color={color}
+    roughness={0.7}
+    metalness={0.8}
+    envMapIntensity={1}
+  />
+);
 
 // Glass material
 const GlassMaterial = () => (
@@ -52,7 +30,7 @@ const GlassMaterial = () => (
   />
 );
 
-// 3D Dimension Label Component
+// 3D Dimension Label Component - temporarily disabled
 function DimensionLabel({
   value,
   position,
@@ -62,24 +40,7 @@ function DimensionLabel({
   position: [number, number, number];
   label: string;
 }) {
-  return (
-    <group position={position}>
-      <Text
-        fontSize={0.08}
-        color="#1a1a1a"
-        anchorX="center"
-        anchorY="middle"
-        font="/fonts/inter-bold.woff"
-      >
-        {`${Math.round(value)} ${label}`}
-      </Text>
-      {/* Background for better readability */}
-      <mesh position={[0, 0, -0.01]}>
-        <planeGeometry args={[0.4, 0.12]} />
-        <meshBasicMaterial color="#ffffff" opacity={0.9} transparent />
-      </mesh>
-    </group>
-  );
+  return null; // Temporarily disabled to fix loading
 }
 
 export function Door3DEnhanced() {
@@ -128,7 +89,7 @@ export function Door3DEnhanced() {
         position={[-doorWidth / 2 + stileWidth / 2, 0, 0]}
         castShadow
       >
-        <SteelMaterial color={frameColor} finish={finish} />
+        <SteelMaterial color={frameColor} />
       </RoundedBox>
 
       {/* RIGHT STILE - Vertical profile */}
@@ -139,7 +100,7 @@ export function Door3DEnhanced() {
         position={[doorWidth / 2 - stileWidth / 2, 0, 0]}
         castShadow
       >
-        <SteelMaterial color={frameColor} finish={finish} />
+        <SteelMaterial color={frameColor} />
       </RoundedBox>
 
       {/* TOP RAIL - Horizontal profile */}
@@ -150,7 +111,7 @@ export function Door3DEnhanced() {
         position={[0, doorHeight / 2 - railHeight / 2, 0]}
         castShadow
       >
-        <SteelMaterial color={frameColor} finish={finish} />
+        <SteelMaterial color={frameColor} />
       </RoundedBox>
 
       {/* BOTTOM RAIL - Horizontal profile */}
@@ -161,7 +122,7 @@ export function Door3DEnhanced() {
         position={[0, -doorHeight / 2 + railHeight / 2, 0]}
         castShadow
       >
-        <SteelMaterial color={frameColor} finish={finish} />
+        <SteelMaterial color={frameColor} />
       </RoundedBox>
 
       {/* INTERMEDIATE RAILS (Grid dividers) */}
@@ -174,7 +135,7 @@ export function Door3DEnhanced() {
           position={[0, yPos, 0]}
           castShadow
         >
-          <SteelMaterial color={frameColor} finish={finish} />
+          <SteelMaterial color={frameColor} />
         </RoundedBox>
       ))}
 
@@ -187,7 +148,7 @@ export function Door3DEnhanced() {
           position={[0, 0, 0]}
           castShadow
         >
-          <SteelMaterial color={frameColor} finish={finish} />
+          <SteelMaterial color={frameColor} />
         </RoundedBox>
       )}
 
@@ -212,7 +173,7 @@ export function Door3DEnhanced() {
           position={[0, 0, railDepth / 2 + 0.01]}
           castShadow
         >
-          <SteelMaterial color={frameColor} finish={finish} />
+          <SteelMaterial color={frameColor} />
         </RoundedBox>
       )}
 
@@ -220,7 +181,7 @@ export function Door3DEnhanced() {
       {doorType === "scharnier" && handle === "klink" && (
         <group position={[doorWidth / 2 - stileWidth - 0.1, 0, railDepth / 2 + 0.01]}>
           <RoundedBox args={[0.08, 0.02, 0.02]} radius={0.003} smoothness={4} castShadow>
-            <SteelMaterial color={frameColor} finish={finish} />
+            <SteelMaterial color={frameColor} />
           </RoundedBox>
           <mesh position={[0.04, 0, 0]} castShadow>
             <sphereGeometry args={[0.015, 32, 32]} />
