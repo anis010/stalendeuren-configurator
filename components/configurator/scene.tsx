@@ -78,13 +78,13 @@ function Room() {
 function Lighting() {
   return (
     <>
-      {/* Soft ambient light */}
-      <ambientLight intensity={0.5} />
+      {/* Strong ambient for flat, technical drawing look */}
+      <ambientLight intensity={0.8} />
 
-      {/* Key light - main illumination */}
+      {/* Front key light - straight on */}
       <directionalLight
-        position={[5, 10, 8]}
-        intensity={1.5}
+        position={[0, 5, 10]}
+        intensity={2}
         castShadow
         shadow-mapSize-width={4096}
         shadow-mapSize-height={4096}
@@ -96,11 +96,9 @@ function Lighting() {
         shadow-bias={-0.0001}
       />
 
-      {/* Rim light for separation */}
-      <directionalLight position={[-3, 3, -5]} intensity={0.6} />
-
-      {/* Fill light */}
-      <directionalLight position={[0, 2, 5]} intensity={0.4} />
+      {/* Subtle side light for depth */}
+      <directionalLight position={[-2, 2, 3]} intensity={0.3} />
+      <directionalLight position={[2, 2, 3]} intensity={0.3} />
     </>
   );
 }
@@ -117,20 +115,22 @@ export function Scene3D() {
       }}
       style={{ background: "#fafafa" }}
     >
-      {/* Camera */}
-      <PerspectiveCamera makeDefault position={[0, 1.6, 4.5]} fov={45} />
+      {/* Camera - More frontal view for technical drawing aesthetic */}
+      <PerspectiveCamera makeDefault position={[0, 1.2, 3.5]} fov={35} />
 
-      {/* Camera Controls - Limited rotation */}
+      {/* Camera Controls - Very limited for flat view */}
       <OrbitControls
         enablePan={false}
         enableZoom={true}
-        minDistance={3.5}
-        maxDistance={7}
-        minPolarAngle={Math.PI / 3.5}
-        maxPolarAngle={Math.PI / 2.2}
-        maxAzimuthAngle={Math.PI / 6}
-        minAzimuthAngle={-Math.PI / 6}
+        minDistance={3}
+        maxDistance={5}
+        minPolarAngle={Math.PI / 2.5}
+        maxPolarAngle={Math.PI / 2.1}
+        maxAzimuthAngle={Math.PI / 12}
+        minAzimuthAngle={-Math.PI / 12}
         target={[0, 1.2, 0]}
+        enableDamping
+        dampingFactor={0.05}
       />
 
       {/* Premium Studio Lighting */}

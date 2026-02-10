@@ -15,18 +15,17 @@ const SteelMaterial = ({ color }: { color: string }) => (
   />
 );
 
-// Glass material
+// Glass material - More opaque/white for technical drawing look
 const GlassMaterial = () => (
   <meshPhysicalMaterial
-    color="#eff6ff"
+    color="#f8f9fa"
     transparent
-    transmission={1}
-    roughness={0.05}
-    thickness={2.5}
+    transmission={0.3}
+    roughness={0.1}
+    thickness={1}
     ior={1.5}
-    envMapIntensity={1}
-    clearcoat={1}
-    clearcoatRoughness={0}
+    envMapIntensity={0.5}
+    opacity={0.95}
   />
 );
 
@@ -59,13 +58,13 @@ export function Door3DEnhanced() {
   const doorWidth = doorLeafWidth / 1000; // Convert mm to m
   const doorHeight = height / 1000; // Convert mm to m
 
-  // Profile dimensions (in meters)
-  const stileWidth = 0.04; // 40mm vertical profiles
-  const stileDepth = 0.04; // 40mm depth
-  const railHeight = 0.02; // 20mm horizontal profiles
-  const railDepth = 0.04; // 40mm depth
-  const glassThickness = 0.008; // 8mm glass
-  const profileRadius = 0.001; // 1mm rounded corners
+  // Profile dimensions (in meters) - Thicker for visibility
+  const stileWidth = 0.06; // 60mm vertical profiles (more visible)
+  const stileDepth = 0.06; // 60mm depth
+  const railHeight = 0.04; // 40mm horizontal profiles (more visible)
+  const railDepth = 0.06; // 60mm depth
+  const glassThickness = 0.01; // 10mm glass
+  const profileRadius = 0.002; // 2mm rounded corners
 
   // Calculate positions for grid dividers
   const getDividerPositions = () => {
