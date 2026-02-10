@@ -30,15 +30,15 @@ function StepIndicator() {
             <div
               className={`flex size-8 items-center justify-center rounded-full text-sm font-semibold transition-colors ${
                 i <= currentStep
-                  ? "bg-brand-orange text-white"
-                  : "bg-muted text-muted-foreground"
+                  ? "bg-[#1A2E2E] text-white"
+                  : "bg-gray-200 text-gray-500"
               }`}
             >
               {i + 1}
             </div>
             <span
               className={`hidden text-xs font-medium lg:inline ${
-                i === currentStep ? "text-foreground" : "text-muted-foreground"
+                i === currentStep ? "text-[#1A2E2E]" : "text-gray-500"
               }`}
             >
               {label}
@@ -47,7 +47,7 @@ function StepIndicator() {
           {i < totalSteps - 1 && (
             <div
               className={`h-px w-4 transition-colors lg:w-6 ${
-                i < currentStep ? "bg-brand-orange" : "bg-border"
+                i < currentStep ? "bg-[#1A2E2E]" : "bg-gray-300"
               }`}
             />
           )}
@@ -72,13 +72,17 @@ function WizardContent() {
       {/* Navigation — hidden on step 1 (auto-advances) and summary (has its own button) */}
       {!isFirstStep && !isLastStep && (
         <div className="mt-6 flex justify-between gap-4">
-          <Button variant="outline" onClick={prevStep} className="flex-1 sm:flex-none">
+          <Button
+            variant="outline"
+            onClick={prevStep}
+            className="flex-1 border-[#1A2E2E] text-[#1A2E2E] hover:bg-[#1A2E2E]/5 sm:flex-none"
+          >
             <ChevronLeft className="size-4" />
             Vorige
           </Button>
           <Button
             onClick={nextStep}
-            className="flex-1 bg-brand-orange text-white hover:bg-brand-orange/90 sm:flex-none"
+            className="flex-1 bg-[#C4D668] text-[#1A2E2E] hover:bg-[#b5c75a] sm:flex-none"
           >
             Volgende
             <ChevronRight className="size-4" />
@@ -99,44 +103,35 @@ function WizardContent() {
   );
 }
 
+import { DoorVisualizer } from "@/components/configurator/door-visualizer";
+
 export default function OffertePage() {
   return (
     <FormProvider>
       {/* Mobile Header */}
       <div className="px-4 py-6 lg:hidden">
-        <h1 className="mb-1 text-2xl font-bold tracking-tight">
-          Offerte Aanvragen
+        <h1 className="mb-1 text-2xl font-bold tracking-tight text-[#1A2E2E]">
+          Configureer uw deur
         </h1>
-        <p className="text-sm text-muted-foreground">
-          Configureer uw product in een paar stappen.
+        <p className="text-sm text-gray-600">
+          Ontwerp uw stalen deur in realtime.
         </p>
       </div>
 
       {/* Split Screen Layout */}
       <div className="grid grid-cols-1 gap-8 px-4 py-8 lg:grid-cols-12 lg:px-8 lg:py-12">
-        {/* Left Column: Visual Preview (Desktop Only) */}
-        <div className="relative hidden overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-slate-100 to-slate-200 lg:col-span-8 lg:block lg:h-[calc(100vh-150px)]">
-          <div className="sticky top-24 flex h-full items-center justify-center">
-            <div className="relative h-full w-full overflow-hidden rounded-[2.5rem]">
-              <img
-                src="/images/hero.jpg"
-                alt="Product preview"
-                className="h-full w-full object-cover"
-              />
-              <div className="absolute left-8 top-8">
-                <div className="rounded-full bg-black/60 px-4 py-2 text-sm font-medium text-white backdrop-blur-sm">
-                  Live Voorbeeld
-                </div>
-              </div>
-            </div>
+        {/* Left Column: Live Visualizer (Desktop Only) */}
+        <div className="relative hidden lg:col-span-8 lg:block lg:h-[calc(100vh-150px)]">
+          <div className="sticky top-24 h-full">
+            <DoorVisualizer />
           </div>
         </div>
 
         {/* Right Column: Controls */}
         <div className="lg:col-span-4">
           <div className="rounded-3xl bg-white p-6 shadow-xl lg:p-8">
-            <h2 className="mb-6 text-2xl font-bold text-brand-dark-green">
-              Configureer jouw product
+            <h2 className="mb-6 text-2xl font-bold text-[#1A2E2E]">
+              Configureer uw deur
             </h2>
 
             <StepIndicator />
