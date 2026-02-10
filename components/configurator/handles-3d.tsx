@@ -26,15 +26,15 @@ const HandleMaterial = ({ color }: { color: string }) => (
  * Classic industrial style, common on steel pivot doors
  */
 export function Beugelgreep({ finish, doorHeight, railDepth }: HandleProps) {
-  const color = {
+  const color = ({
     zwart: "#1a1a1a",
     brons: "#8B6F47",
     grijs: "#525252",
-  }[finish];
+  }[finish] || "#1a1a1a") as string;
 
   const handleLength = Math.min(doorHeight * 0.35, 0.8); // Max 80cm
   const barDiameter = 0.025; // 25mm diameter bar
-  const mountBlockSize = [0.04, 0.06, 0.03]; // Mount block dimensions
+  const mountBlockSize: [number, number, number] = [0.04, 0.06, 0.03]; // Mount block dimensions
 
   return (
     <group position={[0, 0, railDepth / 2 + 0.02]}>
@@ -83,11 +83,11 @@ export function Beugelgreep({ finish, doorHeight, railDepth }: HandleProps) {
  * Minimalist flush-mount design
  */
 export function Hoekgreep({ finish, doorWidth, railDepth, stileWidth }: HandleProps) {
-  const color = {
+  const color = ({
     zwart: "#1a1a1a",
     brons: "#8B6F47",
     grijs: "#525252",
-  }[finish];
+  }[finish] || "#1a1a1a") as string;
 
   const horizontalLength = 0.15; // 15cm horizontal
   const verticalLength = 0.12; // 12cm vertical
@@ -132,11 +132,11 @@ export function Hoekgreep({ finish, doorWidth, railDepth, stileWidth }: HandlePr
  * Elegant curved design for flush doors
  */
 export function Maangreep({ finish, doorWidth, railDepth, stileWidth }: HandleProps) {
-  const color = {
+  const color = ({
     zwart: "#1a1a1a",
     brons: "#8B6F47",
     grijs: "#525252",
-  }[finish];
+  }[finish] || "#1a1a1a") as string;
 
   const curveRadius = 0.08; // 8cm radius
   const handleDepth = 0.025; // 25mm deep recess
@@ -179,11 +179,11 @@ export function Maangreep({ finish, doorWidth, railDepth, stileWidth }: HandlePr
  * Modern minimalist design
  */
 export function Ovaalgreep({ finish, doorWidth, railDepth, stileWidth }: HandleProps) {
-  const color = {
+  const color = ({
     zwart: "#1a1a1a",
     brons: "#8B6F47",
     grijs: "#525252",
-  }[finish];
+  }[finish] || "#1a1a1a") as string;
 
   // Create oval shape using THREE.Shape
   const shape = new THREE.Shape();
@@ -217,12 +217,6 @@ export function Ovaalgreep({ finish, doorWidth, railDepth, stileWidth }: HandleP
         <extrudeGeometry args={[shape, extrudeSettings]} />
         <HandleMaterial color={color} />
       </mesh>
-
-      {/* Inner void (make it a ring, not solid) */}
-      <mesh position={[0, 0, 0.01]}>
-        <ellipseGeometry args={[rx * 0.7, ry * 0.7, 32]} />
-        <meshBasicMaterial color="#fafafa" />
-      </mesh>
     </group>
   );
 }
@@ -232,11 +226,11 @@ export function Ovaalgreep({ finish, doorWidth, railDepth, stileWidth }: HandleP
  * Classic hinged door handle
  */
 export function Klink({ finish, doorWidth, railDepth, stileWidth }: HandleProps) {
-  const color = {
+  const color = ({
     zwart: "#1a1a1a",
     brons: "#8B6F47",
     grijs: "#525252",
-  }[finish];
+  }[finish] || "#1a1a1a") as string;
 
   const leverLength = 0.12; // 12cm lever
   const leverThickness = 0.015; // 15mm thick
@@ -285,11 +279,11 @@ export function Klink({ finish, doorWidth, railDepth, stileWidth }: HandleProps)
  * Straight vertical bar for pivot doors
  */
 export function UGreep({ finish, railDepth }: HandleProps) {
-  const color = {
+  const color = ({
     zwart: "#1a1a1a",
     brons: "#8B6F47",
     grijs: "#525252",
-  }[finish];
+  }[finish] || "#1a1a1a") as string;
 
   return (
     <RoundedBox
