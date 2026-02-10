@@ -5,32 +5,31 @@ import { useConfiguratorStore } from "@/lib/store";
 export function DoorVisualizer() {
   const { doorType, gridType, finish, handle } = useConfiguratorStore();
 
-  // Color mapping based on finish
+  // Frame color mapping based on finish
   const frameColor = {
-    zwart: "#1A1A1A",
+    zwart: "#1f1f1f",
     brons: "#8B6F47",
-    grijs: "#4A5568",
+    grijs: "#525252",
   }[finish];
 
-  const viewBoxWidth = 400;
-  const viewBoxHeight = 600;
-  const frameThickness = 20;
-  const padding = 40;
+  // Door width varies by type
+  const doorWidth = doorType === "paneel" ? "w-[300px]" : "w-[240px]";
 
-  // Door dimensions within viewBox
-  const doorWidth = viewBoxWidth - padding * 2;
-  const doorHeight = viewBoxHeight - padding * 2;
-  const doorX = padding;
-  const doorY = padding;
+  // Grid configuration
+  const gridConfig = {
+    "3-vlak": "grid-rows-3",
+    "4-vlak": "grid-rows-4",
+    geen: "",
+  }[gridType];
 
   return (
-    <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-slate-100 to-slate-200">
+    <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-[2.5rem]">
       {/* Background room image with overlay */}
       <div
-        className="absolute inset-0 bg-cover bg-center opacity-20"
+        className="absolute inset-0 bg-cover bg-center"
         style={{ backgroundImage: "url(/images/hero.jpg)" }}
       />
-      <div className="absolute inset-0 bg-white/40" />
+      <div className="absolute inset-0 bg-white/60" />
 
       {/* Live Preview Badge */}
       <div className="absolute left-8 top-8 z-10">
@@ -40,132 +39,68 @@ export function DoorVisualizer() {
         </div>
       </div>
 
-      {/* SVG Door */}
-      <svg
-        viewBox={`0 0 ${viewBoxWidth} ${viewBoxHeight}`}
-        className="relative z-10 h-[90%] w-auto drop-shadow-2xl"
-      >
-        {/* Outer Frame */}
-        <rect
-          x={doorX}
-          y={doorY}
-          width={doorWidth}
-          height={doorHeight}
-          fill={frameColor}
-          stroke={frameColor}
-          strokeWidth="2"
-          rx="4"
-        />
+      {/* The Door Frame (CSS-based) */}
+      <div className="relative z-10 flex h-[500px] items-center justify-center">
+        <div
+          className={`relative h-[480px] ${doorWidth} rounded-sm border-[12px] shadow-2xl ring-1 ring-white/10`}
+          style={{ borderColor: frameColor }}
+        >
+          {/* The Glass Panels with Grid */}
+          {gridType !== "geen" ? (
+            <div
+              className={`grid h-full w-full gap-y-3 ${gridConfig}`}
+              style={{ backgroundColor: frameColor }}
+            >
+              {gridType === "3-vlak" &&
+                [1, 2, 3].map((i) => (
+                  <div
+                    key={i}
+                    className="backdrop-blur-[1px] backdrop-brightness-110 bg-sky-100/10"
+                  />
+                ))}
+              {gridType === "4-vlak" &&
+                [1, 2, 3, 4].map((i) => (
+                  <div
+                    key={i}
+                    className="backdrop-blur-[1px] backdrop-brightness-110 bg-sky-100/10"
+                  />
+                ))}
+            </div>
+          ) : (
+            // No grid - single glass panel
+            <div className="h-full w-full backdrop-blur-[1px] backdrop-brightness-110 bg-sky-100/10" />
+          )}
 
-        {/* Inner panel (lighter) */}
-        <rect
-          x={doorX + frameThickness}
-          y={doorY + frameThickness}
-          width={doorWidth - frameThickness * 2}
-          height={doorHeight - frameThickness * 2}
-          fill={frameColor}
-          opacity="0.7"
-          rx="2"
-        />
+          {/* Handle Overlays */}
+          {doorType === "taats" && handle === "u-greep" && (
+            <div
+              className="absolute left-1/2 top-1/2 h-32 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full shadow-lg"
+              style={{ backgroundColor: frameColor }}
+            />
+          )}
 
-        {/* Grid Lines based on gridType */}
-        {gridType === "3-vlak" && (
-          <>
-            <line
-              x1={doorX + frameThickness}
-              y1={doorY + doorHeight / 3}
-              x2={doorX + doorWidth - frameThickness}
-              y2={doorY + doorHeight / 3}
-              stroke={frameColor}
-              strokeWidth="8"
-            />
-            <line
-              x1={doorX + frameThickness}
-              y1={doorY + (doorHeight / 3) * 2}
-              x2={doorX + doorWidth - frameThickness}
-              y2={doorY + (doorHeight / 3) * 2}
-              stroke={frameColor}
-              strokeWidth="8"
-            />
-          </>
-        )}
+          {doorType === "scharnier" && handle === "klink" && (
+            <div className="absolute right-4 top-1/2 flex -translate-y-1/2 items-center gap-1">
+              <div
+                className="h-2 w-12 rounded-full shadow-md"
+                style={{ backgroundColor: frameColor }}
+              />
+              <div
+                className="size-3 rounded-full shadow-md ring-1 ring-white/20"
+                style={{ backgroundColor: finish === "brons" ? "#6B5434" : frameColor }}
+              />
+            </div>
+          )}
 
-        {gridType === "4-vlak" && (
-          <>
-            <line
-              x1={doorX + frameThickness}
-              y1={doorY + doorHeight / 4}
-              x2={doorX + doorWidth - frameThickness}
-              y2={doorY + doorHeight / 4}
-              stroke={frameColor}
-              strokeWidth="8"
+          {doorType === "paneel" && (
+            // Central vertical divider for paneel
+            <div
+              className="absolute left-1/2 top-0 h-full w-3 -translate-x-1/2 shadow-inner"
+              style={{ backgroundColor: frameColor }}
             />
-            <line
-              x1={doorX + frameThickness}
-              y1={doorY + doorHeight / 2}
-              x2={doorX + doorWidth - frameThickness}
-              y2={doorY + doorHeight / 2}
-              stroke={frameColor}
-              strokeWidth="8"
-            />
-            <line
-              x1={doorX + frameThickness}
-              y1={doorY + (doorHeight / 4) * 3}
-              x2={doorX + doorWidth - frameThickness}
-              y2={doorY + (doorHeight / 4) * 3}
-              stroke={frameColor}
-              strokeWidth="8"
-            />
-          </>
-        )}
-
-        {/* Handle based on doorType */}
-        {doorType === "taats" && handle === "u-greep" && (
-          <rect
-            x={doorX + doorWidth / 2 - 6}
-            y={doorY + doorHeight / 2 - 80}
-            width="12"
-            height="160"
-            fill="#B8860B"
-            rx="6"
-          />
-        )}
-
-        {doorType === "scharnier" && handle === "klink" && (
-          <>
-            {/* Handle base */}
-            <rect
-              x={doorX + doorWidth - frameThickness - 50}
-              y={doorY + doorHeight / 2 - 8}
-              width="40"
-              height="16"
-              fill="#B8860B"
-              rx="8"
-            />
-            {/* Handle knob */}
-            <circle
-              cx={doorX + doorWidth - frameThickness - 30}
-              cy={doorY + doorHeight / 2}
-              r="6"
-              fill="#8B6F47"
-            />
-          </>
-        )}
-
-        {doorType === "paneel" && (
-          <>
-            {/* Central vertical line for paneel */}
-            <line
-              x1={doorX + doorWidth / 2}
-              y1={doorY + frameThickness}
-              x2={doorX + doorWidth / 2}
-              y2={doorY + doorHeight - frameThickness}
-              stroke={frameColor}
-              strokeWidth="8"
-            />
-          </>
-        )}
-      </svg>
+          )}
+        </div>
+      </div>
 
       {/* Configuration Info Card */}
       <div className="absolute bottom-8 left-8 right-8 z-10">
