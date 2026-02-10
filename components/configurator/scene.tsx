@@ -2,7 +2,7 @@
 
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, PerspectiveCamera, Environment, ContactShadows } from "@react-three/drei";
-import { Door3D } from "./door-3d";
+import { Door3DEnhanced } from "./door-3d-enhanced";
 import * as THREE from "three";
 
 function Room() {
@@ -152,8 +152,8 @@ export function Scene3D() {
       {/* The Room */}
       <Room />
 
-      {/* The Door */}
-      <Door3D />
+      {/* The Door - Enhanced with textures and dimensions */}
+      <Door3DEnhanced />
     </Canvas>
   );
 }
