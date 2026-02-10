@@ -3,88 +3,180 @@
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, PerspectiveCamera, Environment, ContactShadows } from "@react-three/drei";
 import { Door3DEnhanced } from "./door-3d-enhanced";
+import { useConfiguratorStore } from "@/lib/store";
 import * as THREE from "three";
 
-function Room() {
+function LivingRoom({ doorWidth, doorHeight }: { doorWidth: number; doorHeight: number }) {
   const wallThickness = 0.15;
-  const doorWidth = 1.3;
-  const doorHeight = 2.5;
+  const roomWidth = 8;
+  const roomDepth = 6;
+  const roomHeight = 3;
+
+  // Calculate dynamic doorway dimensions
+  const doorwayWidth = doorWidth + wallThickness * 2 + 0.1; // Extra margin
+  const doorwayHeight = doorHeight + wallThickness + 0.1;
 
   return (
     <group>
-      {/* Floor - Clean shadow catcher */}
-      <mesh
-        rotation={[-Math.PI / 2, 0, 0]}
-        position={[0, 0, 0]}
-        receiveShadow
-      >
-        <planeGeometry args={[15, 15]} />
-        <meshStandardMaterial color="#f5f5f5" roughness={0.9} metalness={0} />
+      {/* Floor - Modern light wood */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} receiveShadow>
+        <planeGeometry args={[roomWidth * 2, roomDepth * 2]} />
+        <meshStandardMaterial color="#e8dcc4" roughness={0.8} metalness={0} />
       </mesh>
 
-      {/* Proper Doorway with Reveal */}
+      {/* Back Wall with Dynamic Doorway */}
       <group position={[0, 0, -wallThickness / 2]}>
-        {/* Left Pillar */}
-        <mesh position={[-(doorWidth / 2 + wallThickness / 2), doorHeight / 2, 0]} receiveShadow castShadow>
-          <boxGeometry args={[wallThickness, doorHeight + wallThickness, wallThickness]} />
-          <meshStandardMaterial color="#fafafa" roughness={1} />
+        {/* Left Pillar - Dynamic height */}
+        <mesh
+          position={[-(doorwayWidth / 2 + wallThickness / 2), roomHeight / 2, 0]}
+          receiveShadow
+          castShadow
+        >
+          <boxGeometry
+            args={[wallThickness, roomHeight, wallThickness]}
+          />
+          <meshStandardMaterial color="#f5f5f5" roughness={1} />
         </mesh>
 
-        {/* Right Pillar */}
-        <mesh position={[doorWidth / 2 + wallThickness / 2, doorHeight / 2, 0]} receiveShadow castShadow>
-          <boxGeometry args={[wallThickness, doorHeight + wallThickness, wallThickness]} />
-          <meshStandardMaterial color="#fafafa" roughness={1} />
+        {/* Right Pillar - Dynamic height */}
+        <mesh
+          position={[doorwayWidth / 2 + wallThickness / 2, roomHeight / 2, 0]}
+          receiveShadow
+          castShadow
+        >
+          <boxGeometry
+            args={[wallThickness, roomHeight, wallThickness]}
+          />
+          <meshStandardMaterial color="#f5f5f5" roughness={1} />
         </mesh>
 
-        {/* Top Lintel */}
-        <mesh position={[0, doorHeight + wallThickness / 2, 0]} receiveShadow castShadow>
-          <boxGeometry args={[doorWidth + wallThickness * 2, wallThickness, wallThickness]} />
-          <meshStandardMaterial color="#fafafa" roughness={1} />
+        {/* Doorway Frame - Left */}
+        <mesh
+          position={[-(doorwayWidth / 2), doorHeight / 2, 0]}
+          receiveShadow
+          castShadow
+        >
+          <boxGeometry args={[wallThickness, doorHeight, wallThickness]} />
+          <meshStandardMaterial color="#e0e0e0" roughness={0.9} />
+        </mesh>
+
+        {/* Doorway Frame - Right */}
+        <mesh
+          position={[doorwayWidth / 2, doorHeight / 2, 0]}
+          receiveShadow
+          castShadow
+        >
+          <boxGeometry args={[wallThickness, doorHeight, wallThickness]} />
+          <meshStandardMaterial color="#e0e0e0" roughness={0.9} />
+        </mesh>
+
+        {/* Doorway Frame - Top (Lintel) */}
+        <mesh
+          position={[0, doorHeight, 0]}
+          receiveShadow
+          castShadow
+        >
+          <boxGeometry
+            args={[doorwayWidth + wallThickness * 2, wallThickness, wallThickness]}
+          />
+          <meshStandardMaterial color="#e0e0e0" roughness={0.9} />
         </mesh>
 
         {/* Main Wall - Left Section */}
-        <mesh position={[-doorWidth - wallThickness * 2, 2.5, 0]} receiveShadow castShadow>
-          <boxGeometry args={[6, 5, wallThickness]} />
-          <meshStandardMaterial color="#fafafa" roughness={1} />
+        <mesh
+          position={[-(doorwayWidth / 2 + wallThickness + (roomWidth - doorwayWidth) / 4), roomHeight / 2, 0]}
+          receiveShadow
+          castShadow
+        >
+          <boxGeometry
+            args={[(roomWidth - doorwayWidth) / 2, roomHeight, wallThickness]}
+          />
+          <meshStandardMaterial color="#f5f5f5" roughness={1} />
         </mesh>
 
         {/* Main Wall - Right Section */}
-        <mesh position={[doorWidth + wallThickness * 2, 2.5, 0]} receiveShadow castShadow>
-          <boxGeometry args={[6, 5, wallThickness]} />
-          <meshStandardMaterial color="#fafafa" roughness={1} />
+        <mesh
+          position={[doorwayWidth / 2 + wallThickness + (roomWidth - doorwayWidth) / 4, roomHeight / 2, 0]}
+          receiveShadow
+          castShadow
+        >
+          <boxGeometry
+            args={[(roomWidth - doorwayWidth) / 2, roomHeight, wallThickness]}
+          />
+          <meshStandardMaterial color="#f5f5f5" roughness={1} />
         </mesh>
 
-        {/* Main Wall - Top Section */}
-        <mesh position={[0, doorHeight + wallThickness + 1.25, 0]} receiveShadow castShadow>
-          <boxGeometry args={[doorWidth + wallThickness * 2, 2.5, wallThickness]} />
-          <meshStandardMaterial color="#fafafa" roughness={1} />
+        {/* Main Wall - Top Section (above doorway) */}
+        <mesh
+          position={[0, doorwayHeight + (roomHeight - doorwayHeight) / 2, 0]}
+          receiveShadow
+          castShadow
+        >
+          <boxGeometry
+            args={[doorwayWidth + wallThickness * 2, roomHeight - doorwayHeight, wallThickness]}
+          />
+          <meshStandardMaterial color="#f5f5f5" roughness={1} />
         </mesh>
       </group>
 
-      {/* Side Walls for depth */}
-      <mesh position={[-7, 2.5, 2]} receiveShadow castShadow>
-        <boxGeometry args={[0.15, 5, 10]} />
-        <meshStandardMaterial color="#fcfcfc" roughness={1} />
+      {/* Left Wall */}
+      <mesh position={[-roomWidth / 2, roomHeight / 2, roomDepth / 2]} receiveShadow castShadow>
+        <boxGeometry args={[wallThickness, roomHeight, roomDepth]} />
+        <meshStandardMaterial color="#fafafa" roughness={1} />
       </mesh>
 
-      <mesh position={[7, 2.5, 2]} receiveShadow castShadow>
-        <boxGeometry args={[0.15, 5, 10]} />
-        <meshStandardMaterial color="#fcfcfc" roughness={1} />
+      {/* Right Wall */}
+      <mesh position={[roomWidth / 2, roomHeight / 2, roomDepth / 2]} receiveShadow castShadow>
+        <boxGeometry args={[wallThickness, roomHeight, roomDepth]} />
+        <meshStandardMaterial color="#fafafa" roughness={1} />
+      </mesh>
+
+      {/* Ceiling */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, roomHeight, roomDepth / 2]} receiveShadow>
+        <planeGeometry args={[roomWidth, roomDepth]} />
+        <meshStandardMaterial color="#ffffff" roughness={1} />
+      </mesh>
+
+      {/* Decorative Elements - Baseboard Left */}
+      <mesh position={[-roomWidth / 2 + wallThickness, 0.05, roomDepth / 2]} castShadow>
+        <boxGeometry args={[wallThickness / 2, 0.1, roomDepth - wallThickness]} />
+        <meshStandardMaterial color="#d0d0d0" roughness={0.8} />
+      </mesh>
+
+      {/* Decorative Elements - Baseboard Right */}
+      <mesh position={[roomWidth / 2 - wallThickness, 0.05, roomDepth / 2]} castShadow>
+        <boxGeometry args={[wallThickness / 2, 0.1, roomDepth - wallThickness]} />
+        <meshStandardMaterial color="#d0d0d0" roughness={0.8} />
       </mesh>
     </group>
+  );
+}
+
+function DoorWithRoom() {
+  const { doorLeafWidth, height } = useConfiguratorStore();
+
+  // Convert mm to meters for 3D scene
+  const doorWidth = doorLeafWidth / 1000;
+  const doorHeight = height / 1000;
+
+  return (
+    <>
+      <LivingRoom doorWidth={doorWidth} doorHeight={doorHeight} />
+      <Door3DEnhanced />
+    </>
   );
 }
 
 function Lighting() {
   return (
     <>
-      {/* Strong ambient for flat, technical drawing look */}
-      <ambientLight intensity={0.8} />
+      {/* Ambient for overall illumination */}
+      <ambientLight intensity={0.6} />
 
-      {/* Front key light - straight on */}
+      {/* Main directional light (sunlight from window) */}
       <directionalLight
-        position={[0, 5, 10]}
-        intensity={2}
+        position={[5, 6, 8]}
+        intensity={1.5}
         castShadow
         shadow-mapSize-width={4096}
         shadow-mapSize-height={4096}
@@ -96,9 +188,11 @@ function Lighting() {
         shadow-bias={-0.0001}
       />
 
-      {/* Subtle side light for depth */}
-      <directionalLight position={[-2, 2, 3]} intensity={0.3} />
-      <directionalLight position={[2, 2, 3]} intensity={0.3} />
+      {/* Fill light from opposite side */}
+      <directionalLight position={[-3, 3, 5]} intensity={0.4} />
+
+      {/* Subtle top light */}
+      <directionalLight position={[0, 8, 2]} intensity={0.3} />
     </>
   );
 }
@@ -110,24 +204,24 @@ export function Scene3D() {
       gl={{
         antialias: true,
         toneMapping: THREE.ACESFilmicToneMapping,
-        toneMappingExposure: 1.3,
+        toneMappingExposure: 1.2,
         outputColorSpace: THREE.SRGBColorSpace,
       }}
       style={{ background: "#fafafa" }}
     >
-      {/* Camera - More frontal view for technical drawing aesthetic */}
-      <PerspectiveCamera makeDefault position={[0, 1.2, 3.5]} fov={35} />
+      {/* Camera - Zoomed out for room context */}
+      <PerspectiveCamera makeDefault position={[0, 1.5, 5.5]} fov={50} />
 
-      {/* Camera Controls - Very limited for flat view */}
+      {/* Camera Controls - More freedom for room viewing */}
       <OrbitControls
         enablePan={false}
         enableZoom={true}
-        minDistance={3}
-        maxDistance={5}
-        minPolarAngle={Math.PI / 2.5}
+        minDistance={4}
+        maxDistance={8}
+        minPolarAngle={Math.PI / 3}
         maxPolarAngle={Math.PI / 2.1}
-        maxAzimuthAngle={Math.PI / 12}
-        minAzimuthAngle={-Math.PI / 12}
+        maxAzimuthAngle={Math.PI / 4}
+        minAzimuthAngle={-Math.PI / 4}
         target={[0, 1.2, 0]}
         enableDamping
         dampingFactor={0.05}
@@ -137,23 +231,20 @@ export function Scene3D() {
       <Lighting />
 
       {/* City/Apartment Environment for realistic steel reflections */}
-      <Environment preset="city" environmentIntensity={0.8} />
+      <Environment preset="apartment" environmentIntensity={0.6} />
 
       {/* High-Resolution Contact Shadows for grounding */}
       <ContactShadows
         position={[0, 0.01, 0]}
-        opacity={0.5}
-        scale={10}
-        blur={2}
-        far={1}
+        opacity={0.4}
+        scale={12}
+        blur={2.5}
+        far={2}
         resolution={1024}
       />
 
-      {/* The Room */}
-      <Room />
-
       {/* The Door - Enhanced with textures and dimensions */}
-      <Door3DEnhanced />
+      <DoorWithRoom />
     </Canvas>
   );
 }

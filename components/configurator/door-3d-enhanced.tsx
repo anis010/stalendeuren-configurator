@@ -1,9 +1,23 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useMemo } from "react";
 import { useConfiguratorStore } from "@/lib/store";
 import { RoundedBox } from "@react-three/drei";
 import * as THREE from "three";
+import {
+  Beugelgreep,
+  Hoekgreep,
+  Maangreep,
+  Ovaalgreep,
+  Klink,
+  UGreep,
+} from "./handles-3d";
+import {
+  createStandardGlass,
+  createRoundedCornerGlass,
+  createInvertedUGlass,
+  createNormalUGlass,
+} from "@/lib/glass-patterns";
 
 // Steel material - fallback to solid color for now
 const SteelMaterial = ({ color }: { color: string }) => (
@@ -43,7 +57,7 @@ function DimensionLabel({
 }
 
 export function Door3DEnhanced() {
-  const { doorType, gridType, finish, handle, doorLeafWidth, height } =
+  const { doorType, gridType, finish, handle, glassPattern, doorLeafWidth, height } =
     useConfiguratorStore();
   const doorRef = useRef<THREE.Group>(null);
 
@@ -151,47 +165,134 @@ export function Door3DEnhanced() {
         </RoundedBox>
       )}
 
-      {/* GLASS PANEL - Sits inside the frame */}
-      <mesh position={[0, 0, 0]} castShadow receiveShadow>
-        <boxGeometry
-          args={[
-            doorWidth - stileWidth * 2,
-            doorHeight - railHeight * 2,
-            glassThickness,
-          ]}
-        />
-        <GlassMaterial />
-      </mesh>
-
-      {/* HANDLE - U-Greep for Taats */}
-      {doorType === "taats" && handle === "u-greep" && (
-        <RoundedBox
-          args={[0.02, 0.6, 0.02]}
-          radius={0.003}
-          smoothness={4}
-          position={[0, 0, railDepth / 2 + 0.01]}
-          castShadow
-        >
-          <SteelMaterial color={frameColor} />
-        </RoundedBox>
+      {/* GLASS PANELS - Pattern-based decorative glass */}
+      {glassPattern === "standard" && (
+        <mesh position={[0, 0, 0]} castShadow receiveShadow>
+          <boxGeometry
+            args={[
+              doorWidth - stileWidth * 2,
+              doorHeight - railHeight * 2,
+              glassThickness,
+            ]}
+          />
+          <GlassMaterial />
+        </mesh>
       )}
 
-      {/* HANDLE - Klink for Scharnier */}
-      {doorType === "scharnier" && handle === "klink" && (
-        <group position={[doorWidth / 2 - stileWidth - 0.1, 0, railDepth / 2 + 0.01]}>
-          <RoundedBox args={[0.08, 0.02, 0.02]} radius={0.003} smoothness={4} castShadow>
-            <SteelMaterial color={frameColor} />
-          </RoundedBox>
-          <mesh position={[0.04, 0, 0]} castShadow>
-            <sphereGeometry args={[0.015, 32, 32]} />
-            <meshStandardMaterial
-              color={finish === "brons" ? "#6B5434" : frameColor}
-              metalness={0.95}
-              roughness={0.05}
-              envMapIntensity={1.2}
+      {glassPattern === "dt9-rounded" && (
+        <mesh position={[0, 0, 0]} castShadow receiveShadow>
+          <extrudeGeometry
+            args={[
+              createRoundedCornerGlass(
+                doorWidth - stileWidth * 2,
+                doorHeight - railHeight * 2,
+                0.12
+              ),
+              { depth: glassThickness, bevelEnabled: false },
+            ]}
+          />
+          <GlassMaterial />
+        </mesh>
+      )}
+
+      {glassPattern === "dt10-ushape" && dividerPositions.length > 0 && (
+        <>
+          {/* Top section - Inverted U */}
+          <mesh
+            position={[0, (doorHeight / 4 + dividerPositions[0]) / 2, 0]}
+            castShadow
+            receiveShadow
+          >
+            <extrudeGeometry
+              args={[
+                createInvertedUGlass(
+                  doorWidth - stileWidth * 2,
+                  Math.abs(doorHeight / 2 - railHeight - dividerPositions[0])
+                ),
+                { depth: glassThickness, bevelEnabled: false },
+              ]}
             />
+            <GlassMaterial />
           </mesh>
-        </group>
+
+          {/* Bottom section - Normal U */}
+          <mesh
+            position={[
+              0,
+              (-doorHeight / 4 + dividerPositions[dividerPositions.length - 1]) / 2,
+              0,
+            ]}
+            castShadow
+            receiveShadow
+          >
+            <extrudeGeometry
+              args={[
+                createNormalUGlass(
+                  doorWidth - stileWidth * 2,
+                  Math.abs(-doorHeight / 2 + railHeight - dividerPositions[dividerPositions.length - 1])
+                ),
+                { depth: glassThickness, bevelEnabled: false },
+              ]}
+            />
+            <GlassMaterial />
+          </mesh>
+        </>
+      )}
+
+      {/* HANDLES - Professional 3D handle components */}
+      {handle === "beugelgreep" && (
+        <Beugelgreep
+          finish={finish}
+          doorWidth={doorWidth}
+          doorHeight={doorHeight}
+          railDepth={railDepth}
+          stileWidth={stileWidth}
+        />
+      )}
+      {handle === "hoekgreep" && (
+        <Hoekgreep
+          finish={finish}
+          doorWidth={doorWidth}
+          doorHeight={doorHeight}
+          railDepth={railDepth}
+          stileWidth={stileWidth}
+        />
+      )}
+      {handle === "maangreep" && (
+        <Maangreep
+          finish={finish}
+          doorWidth={doorWidth}
+          doorHeight={doorHeight}
+          railDepth={railDepth}
+          stileWidth={stileWidth}
+        />
+      )}
+      {handle === "ovaalgreep" && (
+        <Ovaalgreep
+          finish={finish}
+          doorWidth={doorWidth}
+          doorHeight={doorHeight}
+          railDepth={railDepth}
+          stileWidth={stileWidth}
+        />
+      )}
+      {handle === "klink" && (
+        <Klink
+          finish={finish}
+          doorWidth={doorWidth}
+          doorHeight={doorHeight}
+          railDepth={railDepth}
+          stileWidth={stileWidth}
+        />
+      )}
+      {handle === "u-greep" && (
+        <UGreep
+          finish={finish}
+          doorWidth={doorWidth}
+          doorHeight={doorHeight}
+          railDepth={railDepth}
+          stileWidth={stileWidth}
+        />
       )}
 
       {/* 3D DIMENSION LABELS */}

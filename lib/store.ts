@@ -8,11 +8,12 @@ import {
   type DoorConfig,
   type SidePanel,
 } from './calculations';
+import type { GlassPattern } from './glass-patterns';
 
 export type DoorType = 'taats' | 'scharnier' | 'paneel';
 export type GridType = '3-vlak' | '4-vlak' | 'geen';
 export type Finish = 'zwart' | 'brons' | 'grijs';
-export type Handle = 'u-greep' | 'klink' | 'geen';
+export type Handle = 'beugelgreep' | 'hoekgreep' | 'maangreep' | 'ovaalgreep' | 'klink' | 'u-greep' | 'geen';
 
 interface ConfiguratorState {
   // Door configuration
@@ -24,6 +25,7 @@ interface ConfiguratorState {
   gridType: GridType;
   finish: Finish;
   handle: Handle;
+  glassPattern: GlassPattern;
 
   // Dimensions (in mm)
   width: number;
@@ -43,6 +45,7 @@ interface ConfiguratorState {
   setGridType: (type: GridType) => void;
   setFinish: (finish: Finish) => void;
   setHandle: (handle: Handle) => void;
+  setGlassPattern: (pattern: GlassPattern) => void;
   setWidth: (width: number) => void;
   setHeight: (height: number) => void;
   setDimensions: (width: number, height: number) => void;
@@ -68,7 +71,8 @@ export const useConfiguratorStore = create<ConfiguratorState>((set, get) => ({
   sidePanel: 'geen',
   gridType: '3-vlak',
   finish: 'zwart',
-  handle: 'u-greep',
+  handle: 'beugelgreep',
+  glassPattern: 'standard',
   width: 1000,
   height: 2400,
 
@@ -100,6 +104,8 @@ export const useConfiguratorStore = create<ConfiguratorState>((set, get) => ({
   setFinish: (finish) => set({ finish }),
 
   setHandle: (handle) => set({ handle }),
+
+  setGlassPattern: (glassPattern) => set({ glassPattern }),
 
   setWidth: (width) => {
     const { doorConfig, sidePanel } = get();

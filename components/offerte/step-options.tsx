@@ -1,6 +1,7 @@
 "use client";
 
 import { useConfiguratorStore, type Finish, type Handle } from "@/lib/store";
+import { glassPatternOptions, type GlassPattern } from "@/lib/glass-patterns";
 import { Check } from "lucide-react";
 
 const finishOptions: Array<{
@@ -23,16 +24,45 @@ const handleOptions: Array<{
   description: string;
 }> = [
   {
+    value: "beugelgreep",
+    label: "Beugelgreep",
+    description: "Verticale staaf met montageblokken",
+  },
+  {
+    value: "hoekgreep",
+    label: "Hoekgreep",
+    description: "L-vormige minimalistisch design",
+  },
+  {
+    value: "maangreep",
+    label: "Maangreep",
+    description: "Gebogen half-maanvormige greep",
+  },
+  {
+    value: "ovaalgreep",
+    label: "Ovaalgreep",
+    description: "Moderne ovale trekgreep",
+  },
+  {
+    value: "klink",
+    label: "Deurklink",
+    description: "Klassieke deurklink met hendel",
+  },
+  {
     value: "u-greep",
     label: "U-Greep",
-    description: "Verticale greep voor taatsdeur",
+    description: "Eenvoudige rechte staaf",
   },
-  { value: "klink", label: "Klink", description: "Klassieke deurklink" },
-  { value: "geen", label: "Geen greep", description: "Voor vaste panelen" },
+  {
+    value: "geen",
+    label: "Geen greep",
+    description: "Voor vaste panelen",
+  },
 ];
 
 export function StepOptions() {
-  const { finish, handle, setFinish, setHandle } = useConfiguratorStore();
+  const { finish, handle, glassPattern, setFinish, setHandle, setGlassPattern } =
+    useConfiguratorStore();
 
   return (
     <div className="space-y-8">
@@ -82,6 +112,51 @@ export function StepOptions() {
                         {option.description}
                       </p>
                     </div>
+                  </div>
+                  {selected && (
+                    <div className="flex size-6 items-center justify-center rounded-full bg-[#C4D668]">
+                      <Check className="size-4 text-[#1A2E2E]" />
+                    </div>
+                  )}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Glass Pattern Selection */}
+      <div>
+        <h2 className="mb-2 text-lg font-bold text-[#1A2E2E]">Glaspatroon</h2>
+        <p className="mb-4 text-sm text-gray-600">
+          Kies het decoratieve patroon voor de glaspanelen.
+        </p>
+
+        <div className="grid gap-3">
+          {glassPatternOptions.map((option) => {
+            const selected = glassPattern === option.value;
+
+            return (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => setGlassPattern(option.value)}
+                className={`group relative rounded-xl border-2 p-4 text-left transition-all ${
+                  selected
+                    ? "border-[#C4D668] bg-[#1A2E2E] text-white"
+                    : "border-gray-200 bg-white text-gray-900 hover:border-[#1A2E2E]/30"
+                }`}
+              >
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <h3 className="font-bold">{option.label}</h3>
+                    <p
+                      className={`mt-1 text-sm ${
+                        selected ? "text-white/80" : "text-gray-500"
+                      }`}
+                    >
+                      {option.description}
+                    </p>
                   </div>
                   {selected && (
                     <div className="flex size-6 items-center justify-center rounded-full bg-[#C4D668]">
