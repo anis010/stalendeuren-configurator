@@ -5,7 +5,8 @@ import { useConfiguratorStore } from "@/lib/store";
 import * as THREE from "three";
 
 export function Door3D() {
-  const { doorType, gridType, finish, handle } = useConfiguratorStore();
+  const { doorType, gridType, finish, handle, doorLeafWidth, height } =
+    useConfiguratorStore();
   const doorRef = useRef<THREE.Group>(null);
 
   // Frame color based on finish
@@ -15,9 +16,9 @@ export function Door3D() {
     grijs: "#525252",
   }[finish];
 
-  // Door dimensions (more realistic proportions)
-  const doorWidth = doorType === "paneel" ? 1.5 : 1.2;
-  const doorHeight = 2.4;
+  // Convert mm to meters for 3D scene
+  const doorWidth = doorLeafWidth / 1000; // Convert mm to m
+  const doorHeight = height / 1000; // Convert mm to m
   const frameThickness = 0.03; // Slim steel profile (3cm)
   const frameDepth = 0.05; // Depth of frame
   const glassThickness = 0.015; // Realistic glass thickness
