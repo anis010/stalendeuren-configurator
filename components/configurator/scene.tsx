@@ -230,16 +230,16 @@ export function Scene3D() {
       {/* Premium Studio Lighting */}
       <Lighting />
 
-      {/* Studio Environment for photorealistic steel reflections */}
-      <Environment preset="studio" environmentIntensity={1.0} />
+      {/* Apartment Environment for warm, realistic steel reflections */}
+      <Environment preset="apartment" blur={0.6} environmentIntensity={1.2} />
 
       {/* High-Resolution Contact Shadows for grounding */}
       <ContactShadows
         position={[0, 0.01, 0]}
         opacity={0.6}
-        scale={15}
-        blur={2}
-        far={2}
+        scale={20}
+        blur={2.5}
+        far={4}
         resolution={2048}
       />
 

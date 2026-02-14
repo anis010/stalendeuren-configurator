@@ -150,6 +150,44 @@ export function StepDimensions() {
         />
       </div>
 
+      {/* Height Presets - Dutch Market Standards */}
+      <div>
+        <Label className="text-base font-bold text-[#1A2E2E]">
+          Standaard Hoogtes
+        </Label>
+        <p className="mb-3 text-sm text-gray-600">
+          Kies een standaard hoogte of stel handmatig in.
+        </p>
+        <div className="grid grid-cols-3 gap-2">
+          {[
+            { label: 'Renovatie', value: 2015, desc: '201.5 cm' },
+            { label: 'Nieuwbouw', value: 2315, desc: '231.5 cm' },
+            { label: 'Plafondhoog', value: 2500, desc: '250+ cm' },
+          ].map((preset) => {
+            const isActive = height === preset.value;
+            return (
+              <button
+                key={preset.value}
+                type="button"
+                onClick={() => setHeight(preset.value)}
+                className={`rounded-lg border-2 px-3 py-2.5 text-center transition-all ${
+                  isActive
+                    ? 'border-[#C4D668] bg-[#1A2E2E] text-white shadow-md'
+                    : 'border-gray-200 bg-white text-gray-700 hover:border-[#1A2E2E]/30 hover:shadow-sm'
+                }`}
+              >
+                <span className="block text-xs font-bold uppercase tracking-wide">
+                  {preset.label}
+                </span>
+                <span className={`block font-mono text-sm ${isActive ? 'text-[#C4D668]' : 'text-gray-500'}`}>
+                  {preset.desc}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
       {/* Height Control */}
       <div>
         <div className="mb-4 flex items-end justify-between">

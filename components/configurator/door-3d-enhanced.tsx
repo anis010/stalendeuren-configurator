@@ -54,27 +54,25 @@ function SteelMaterialTextured({ color, finish }: { color: string; finish: strin
       <meshStandardMaterial
         map={texture}
         color={color}
-        roughness={0.6}
-        metalness={0.7}
+        roughness={0.7}
+        metalness={0.6}
         envMapIntensity={1.5}
       />
     );
   } catch (error) {
-    // Fallback to solid color if texture fails
     return <SteelMaterialFallback color={color} />;
   }
 }
 
 /**
  * Fallback Steel Material (Solid Color)
- * Used when textures fail to load or as initial state
  */
 function SteelMaterialFallback({ color }: { color: string }) {
   return (
     <meshStandardMaterial
       color={color}
-      roughness={0.6}
-      metalness={0.7}
+      roughness={0.7}
+      metalness={0.6}
       envMapIntensity={1.5}
     />
   );
@@ -88,12 +86,12 @@ const GlassMaterial = () => (
   <meshPhysicalMaterial
     transmission={0.98}
     roughness={0.05}
-    thickness={0.5}
+    thickness={0.007}
     ior={1.5}
     color="#eff6ff"
     transparent
     opacity={0.98}
-    envMapIntensity={0.8}
+    envMapIntensity={1.0}
   />
 );
 

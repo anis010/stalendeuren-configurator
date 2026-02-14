@@ -17,16 +17,27 @@ export const PROFILE_DEPTH = 40; // mm - Tube depth
 export const PROFILE_CORNER_RADIUS = 2; // mm - Rounded corners for welding
 
 /**
- * Glass Specifications
+ * Steel Profile Named Exports (aliases for pricing/manufacturing clarity)
  */
-export const GLASS_THICKNESS = 10; // mm - Standard tempered glass
-export const GLASS_OFFSET = 18; // mm - Center glass in 40mm profile (40-10)/2 - 2mm clearance
+export const STILE_WIDTH = 40; // mm - Vertical profiles (same as PROFILE_WIDTH)
+export const RAIL_WIDTH = 20; // mm - Horizontal slim-line profiles
+
+/**
+ * Glass Specifications - Standard 33.1 laminated safety glass (VSG 33.1)
+ */
+export const GLASS_THICKNESS = 7; // mm - Standard 33.1 Safety Glass
+export const GLASS_OFFSET = 15; // mm - Center glass in 40mm profile: (40-7)/2 - 1.5mm clearance
 
 /**
  * Rail Height Variations
  */
 export const RAIL_HEIGHT_SLIM = 20; // mm - Slim horizontal rails
 export const RAIL_HEIGHT_ROBUST = 40; // mm - Standard robust rails (same as profile)
+
+/**
+ * Taats (Pivot) Door Mechanism
+ */
+export const TAATS_PIVOT_OFFSET = 60; // mm - Pivot axis offset from wall for Taats doors
 
 // ============================================
 // PHYSICAL PART TYPES
