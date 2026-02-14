@@ -39,6 +39,39 @@ export const RAIL_HEIGHT_ROBUST = 40; // mm - Standard robust rails (same as pro
  */
 export const TAATS_PIVOT_OFFSET = 60; // mm - Pivot axis offset from wall for Taats doors
 
+/**
+ * Wall Mounting Dimensions (Sparingsmaat / Deurmaat)
+ * Dutch building standard: Sparingsmaat = rough wall opening
+ */
+export const STELRUIMTE = 10;       // mm - Total tolerance between wall and frame (5mm per side)
+export const HANGNAAD = 3;          // mm - Gap between frame and door leaf per side
+export const WALL_THICKNESS = 150;  // mm - Standard interior wall thickness
+
+/**
+ * Calculate mounting dimensions from Sparingsmaat (wall opening).
+ *
+ * Sparingsmaat (input) -> Frame -> Door Leaf
+ *   Frame = Sparingsmaat - STELRUIMTE (10mm tolerance)
+ *   DoorLeaf = Frame - 2*PROFILE_WIDTH - 2*HANGNAAD (6mm gap)
+ */
+export function calculateMountingDimensions(sparingsmaatWidth: number, sparingsmaatHeight: number) {
+  const frameOuterWidth = sparingsmaatWidth - STELRUIMTE;
+  const frameOuterHeight = sparingsmaatHeight - STELRUIMTE / 2; // 5mm top tolerance only
+  const doorLeafWidth = frameOuterWidth - (2 * HANGNAAD);
+  const doorLeafHeight = frameOuterHeight - (2 * HANGNAAD);
+
+  return {
+    sparingsmaatWidth,
+    sparingsmaatHeight,
+    frameOuterWidth,
+    frameOuterHeight,
+    doorLeafWidth,
+    doorLeafHeight,
+    stelruimtePerSide: STELRUIMTE / 2,  // 5mm gap visible on each side
+    hangnaadPerSide: HANGNAAD,            // 3mm gap between frame and leaf
+  };
+}
+
 // ============================================
 // PHYSICAL PART TYPES
 // ============================================
